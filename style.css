@@ -64,9 +64,9 @@ body {
 	outline: 0;
 }
 
-.btn:hover {
+/* .btn:hover {
 	background-color: var(--light-blue-shade);
-}
+} */
 /* 
 .btn:active {
 	background-color: var(--light-blue);
@@ -152,6 +152,10 @@ body {
 
 	display: flex;
 	flex-flow: row wrap;
+}
+
+.notification:hover {
+	color: #454545;
 }
 
 .notification:last-child {
