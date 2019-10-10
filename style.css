@@ -168,14 +168,15 @@ body {
 	cursor: pointer;
 }
 
-.user-name {
+.title {
 	font-weight: 900;
 }
 
-.user-image {
+.image {
 	width: 44px;
 	height: 44px;
 	border-radius: 50%;
+	padding: 5px;
 }
 
 .notification-row {
