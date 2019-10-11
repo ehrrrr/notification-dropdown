@@ -48,8 +48,6 @@ const data = [
 	}
 ];
 
-const notificationsDropdown = document.getElementById('dropdown-body');
-
 class Notification {
 	constructor(id, type, title) {
 		this.id = id;
@@ -58,7 +56,9 @@ class Notification {
 	}
 
 	createNotification(image, text) {
+		const notificationsDropdown = document.getElementById('dropdown-body');
 		const notification = document.createElement('div');
+		notification.setAttribute('id', this.id);
 		notification.classList.add('notification');
 		notificationsDropdown.appendChild(notification);
 
@@ -139,7 +139,39 @@ class PromotionNotification extends Notification {
 	}
 }
 
-const allNotifications = [];
+class NotificationList {
+	constructor() {
+		this.count = 0;
+		this.notifications = [];
+	}
+
+	displayCounter() {
+		let countNum = document.getElementById('notification-num');
+		countNum.innerText = this.count;
+	}
+
+	addNode(notification) {
+		this.notifications.push(notification);
+		if (notification.type != 'bonus') {
+			this.count++;
+			this.displayCounter();
+		}
+	}
+
+	removeNode(id) {
+		let notification = this.notifications.find(function(notif) {
+			return notif.id === id;
+		});
+		let node = document.getElementById(id);
+		if (notification.type != 'bonus') {
+			this.count--;
+			this.displayCounter();
+		}
+		node.parentNode.removeChild(node);
+	}
+}
+
+const notificationList = new NotificationList();
 data.forEach(function(notification) {
 	if (notification.type === 'text') {
 		const textNotif = new TextNotification(
@@ -150,7 +182,7 @@ data.forEach(function(notification) {
 		);
 		const text = textNotif.createTextBody(textNotif.title, textNotif.text);
 		textNotif.createNotification('./images/text.svg', text);
-		allNotifications.push(textNotif);
+		notificationList.addNode(textNotif);
 	} else if (notification.type === 'bonus') {
 		const bonusNotif = new BonusNotification(
 			notification.id,
@@ -160,7 +192,7 @@ data.forEach(function(notification) {
 		);
 		const text = bonusNotif.createTextBody(bonusNotif.title, bonusNotif.requirement);
 		bonusNotif.createNotification('./images/bonus.svg', text);
-		allNotifications.push(bonusNotif);
+		notificationList.addNode(bonusNotif);
 	} else if (notification.type === 'Promotion') {
 		const promoNotif = new PromotionNotification(
 			notification.id,
@@ -170,8 +202,8 @@ data.forEach(function(notification) {
 		);
 		const text = promoNotif.createTextBody(promoNotif.title, promoNotif.link);
 		promoNotif.createNotification(promoNotif.image, text);
-		allNotifications.push(promoNotif);
+		notificationList.addNode(promoNotif);
 	}
 });
 
-console.log(allNotifications);
+console.log(notificationList);
