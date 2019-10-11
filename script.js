@@ -20,7 +20,7 @@ const data = [
 
 		requirement: 'Deposit $50 to win',
 
-		expires: 3600
+		expires: 5600
 	},
 
 	{
@@ -44,7 +44,7 @@ const data = [
 
 		text: 'Test text notification',
 
-		expires: 5
+		expires: 2000
 	}
 ];
 
@@ -60,6 +60,7 @@ class Notification {
 		const notification = document.createElement('div');
 		notification.setAttribute('id', this.id);
 		notification.classList.add('notification');
+		notification.classList.add('item-is-visible');
 		notificationsDropdown.appendChild(notification);
 
 		const notificationBadgeContainer = document.createElement('div');
@@ -162,17 +163,22 @@ class NotificationList {
 		let notification = this.notifications.find(function(notif) {
 			return notif.id === id;
 		});
-		let node = document.getElementById(id);
+
+		let index = this.notifications.indexOf(notification);
+		if (index > -1) {
+			this.notifications.splice(index, 1);
+		}
+
 		if (notification.type != 'bonus') {
 			this.count--;
 			this.displayCounter();
 		}
-		node.parentNode.removeChild(node);
 	}
 }
 
 const notificationList = new NotificationList();
 data.forEach(function(notification) {
+	const id = notification.id;
 	if (notification.type === 'text') {
 		const textNotif = new TextNotification(
 			notification.id,
@@ -204,6 +210,19 @@ data.forEach(function(notification) {
 		promoNotif.createNotification(promoNotif.image, text);
 		notificationList.addNode(promoNotif);
 	}
+	if (notification.expires) {
+		setTimeout(
+			function() {
+				let node = document.getElementById(id);
+				// node.classList.remove('item-is-visible');
+				node.classList.add('hide-item');
+				node.parentNode.removeChild(node);
+				notificationList.removeNode(id);
+			},
+			notification.expires,
+			id
+		);
+	}
 });
 
-console.log(notificationList);
+console.log(notificationList.notifications);
