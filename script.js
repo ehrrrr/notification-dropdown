@@ -173,8 +173,6 @@ const data = [
 	]
 ];
 
-let response = data[Math.floor(Math.random() * data.length)];
-console.log(response);
 class Notification {
 	constructor(id, type, title) {
 		this.id = id;
@@ -197,7 +195,7 @@ class Notification {
 		const notificationBody = document.createElement('div');
 		notificationBody.classList.add('notification-body');
 
-		if (arguments[0]) {
+		if (image) {
 			const notificationImage = document.createElement('img');
 			notificationImage.classList.add('image');
 			notificationImage.classList.add('column');
@@ -205,7 +203,7 @@ class Notification {
 			notificationBody.appendChild(notificationImage);
 		}
 
-		if (arguments[1]) {
+		if (text) {
 			notificationBody.appendChild(text);
 		}
 
@@ -303,53 +301,64 @@ class NotificationList {
 	}
 }
 
-const notificationList = new NotificationList();
-response.forEach(function(notification) {
-	const id = notification.id;
-	if (notification.type === 'text') {
-		const textNotif = new TextNotification(
-			notification.id,
-			notification.title,
-			notification.text,
-			notification.expires
-		);
-		const text = textNotif.createTextBody(textNotif.title, textNotif.text);
-		textNotif.createNotification('./images/text.svg', text);
-		notificationList.addNode(textNotif);
-	} else if (notification.type === 'bonus') {
-		const bonusNotif = new BonusNotification(
-			notification.id,
-			notification.title,
-			notification.requirement,
-			notification.expires
-		);
-		const text = bonusNotif.createTextBody(bonusNotif.title, bonusNotif.requirement);
-		bonusNotif.createNotification('./images/bonus.svg', text);
-		notificationList.addNode(bonusNotif);
-	} else if (notification.type === 'Promotion') {
-		const promoNotif = new PromotionNotification(
-			notification.id,
-			notification.title,
-			notification.image,
-			notification.link
-		);
-		const text = promoNotif.createTextBody(promoNotif.title, promoNotif.link);
-		promoNotif.createNotification(promoNotif.image, text);
-		notificationList.addNode(promoNotif);
-	}
-	if (notification.expires) {
-		setTimeout(
-			function() {
-				let node = document.getElementById(id);
-				// node.classList.remove('item-is-visible');
-				node.classList.add('hide-item');
-				node.parentNode.removeChild(node);
-				notificationList.removeNode(id);
-			},
-			notification.expires,
-			id
-		);
-	}
-});
+function displayNotifications() {
+	const response = data[Math.floor(Math.random() * data.length)];
+	const notificationList = new NotificationList();
+	const notificationsDropdown = document.getElementById('dropdown-body');
+	notificationsDropdown.innerHTML = '';
+	response.forEach(function(notification) {
+		const id = notification.id;
+		if (notification.type === 'text') {
+			const textNotif = new TextNotification(
+				notification.id,
+				notification.title,
+				notification.text,
+				notification.expires
+			);
+			const text = textNotif.createTextBody(textNotif.title, textNotif.text);
+			textNotif.createNotification('./images/text.svg', text);
+			notificationList.addNode(textNotif);
+		} else if (notification.type === 'bonus') {
+			const bonusNotif = new BonusNotification(
+				notification.id,
+				notification.title,
+				notification.requirement,
+				notification.expires
+			);
+			const text = bonusNotif.createTextBody(bonusNotif.title, bonusNotif.requirement);
+			bonusNotif.createNotification('./images/bonus.svg', text);
+			notificationList.addNode(bonusNotif);
+		} else if (notification.type === 'Promotion') {
+			const promoNotif = new PromotionNotification(
+				notification.id,
+				notification.title,
+				notification.image,
+				notification.link
+			);
+			const text = promoNotif.createTextBody(promoNotif.title, promoNotif.link);
+			promoNotif.createNotification(promoNotif.image, text);
+			notificationList.addNode(promoNotif);
+		}
+		if (notification.expires) {
+			setTimeout(
+				function() {
+					let node = document.getElementById(id);
+					node.parentNode.removeChild(node);
+					notificationList.removeNode(id);
+					console.log(notificationList);
+				},
+				notification.expires,
+				id
+			);
+		}
+	});
+}
 
-console.log(notificationList.notifications);
+displayNotifications();
+/***
+ * Repeatedly calls a function or executes a code snippet, 
+ * with a fixed time delay between each call. It returns an interval ID
+ *  which uniquely identifies the interval, 
+ * so you can remove it later by calling clearInterval()
+ */
+const intervalID = window.setInterval(displayNotifications, 10000);

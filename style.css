@@ -107,7 +107,7 @@ body {
 	top: 95px;
 	left: 370px;
 	width: 308px;
-	/* min-height: 320px; */
+	min-height: 120px;
 	background-color: #fff;
 	border-radius: 5px;
 	z-index: 1;
