@@ -1,53 +1,180 @@
 const data = [
-	{
-		id: 1321,
+	[
+		{
+			id: 1321,
 
-		type: 'text',
+			type: 'text',
 
-		title: 'Test notification 1',
+			title: 'Test notification 1',
 
-		text: 'Test text notification',
+			text: 'Test text notification',
 
-		expires: 3600
-	},
+			expires: 3600
+		},
 
-	{
-		id: 4322,
+		{
+			id: 4322,
 
-		type: 'bonus',
+			type: 'bonus',
 
-		title: 'You win a bonus!',
+			title: 'You win a bonus!',
 
-		requirement: 'Deposit $50 to win',
+			requirement: 'Deposit $50 to win',
 
-		expires: 5600
-	},
+			expires: 5600
+		},
 
-	{
-		id: 5453,
+		{
+			id: 5453,
 
-		type: 'Promotion',
+			type: 'Promotion',
 
-		image: 'https://www.freeiconspng.com/uploads/leistungen-promotion-icon-png-0.png',
+			image: 'https://www.freeiconspng.com/uploads/leistungen-promotion-icon-png-0.png',
 
-		title: '%30 off on sports betting',
+			title: '%30 off on sports betting',
 
-		link: 'https://www.google.com/'
-	},
+			link: 'https://www.google.com/'
+		},
 
-	{
-		id: 5236,
+		{
+			id: 5236,
 
-		type: 'text',
+			type: 'text',
 
-		title: 'Test notification 2',
+			title: 'Test notification 2',
 
-		text: 'Test text notification',
+			text: 'Test text notification',
 
-		expires: 2000
-	}
+			expires: 2000
+		}
+	],
+
+	[
+		{
+			id: 1321,
+
+			type: 'text',
+
+			title: 'Test notification 1',
+
+			text: 'Test text notification',
+
+			expires: 3600
+		},
+
+		{
+			id: 4322,
+
+			type: 'bonus',
+
+			title: 'You win a bonus!',
+
+			requirement: 'Deposit $50 to win',
+
+			expires: 5600
+		},
+
+		{
+			id: 5453,
+
+			type: 'Promotion',
+
+			image: 'https://www.freeiconspng.com/uploads/leistungen-promotion-icon-png-0.png',
+
+			title: '%30 off on sports betting',
+
+			link: 'https://www.google.com/'
+		},
+
+		{
+			id: 1329,
+
+			type: 'text',
+
+			title: 'Test note',
+
+			text: 'Test text notification',
+
+			expires: 2600
+		},
+
+		{
+			id: 4372,
+
+			type: 'bonus',
+
+			title: 'You win a bonus!',
+
+			requirement: 'Deposit $50 to win',
+
+			expires: 4600
+		}
+	],
+
+	[
+		{
+			id: 4322,
+
+			type: 'bonus',
+
+			title: 'You win a bonus!',
+
+			requirement: 'Deposit $50 to win',
+
+			expires: 5600
+		},
+
+		{
+			id: 5453,
+
+			type: 'Promotion',
+
+			image: 'https://www.freeiconspng.com/uploads/leistungen-promotion-icon-png-0.png',
+
+			title: '%30 off on sports betting',
+
+			link: 'https://www.google.com/'
+		},
+
+		{
+			id: 5322,
+
+			type: 'bonus',
+
+			title: 'You win a bonus!',
+
+			requirement: 'Deposit $100 to win',
+
+			expires: 7600
+		},
+
+		{
+			id: 5236,
+
+			type: 'text',
+
+			title: 'Test notification 2',
+
+			text: 'Test text notification',
+
+			expires: 2000
+		},
+		{
+			id: 3453,
+
+			type: 'Promotion',
+
+			image: 'https://www.freeiconspng.com/uploads/leistungen-promotion-icon-png-0.png',
+
+			title: '%50 off on horse betting',
+
+			link: 'https://www.google.com/'
+		}
+	]
 ];
 
+let response = data[Math.floor(Math.random() * data.length)];
+console.log(response);
 class Notification {
 	constructor(id, type, title) {
 		this.id = id;
@@ -177,7 +304,7 @@ class NotificationList {
 }
 
 const notificationList = new NotificationList();
-data.forEach(function(notification) {
+response.forEach(function(notification) {
 	const id = notification.id;
 	if (notification.type === 'text') {
 		const textNotif = new TextNotification(
