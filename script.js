@@ -7,7 +7,7 @@ const data = [
 
 			title: 'Test notification 1',
 
-			text: 'Test text notification',
+			text: 'Test text notification!!!',
 
 			expires: 3600
 		},
@@ -31,7 +31,7 @@ const data = [
 
 			image: 'https://www.freeiconspng.com/uploads/leistungen-promotion-icon-png-0.png',
 
-			title: '%30 off on sports betting',
+			title: '%40 off on sports betting',
 
 			link: 'https://www.google.com/'
 		},
@@ -180,6 +180,41 @@ class Notification {
 		this.title = title;
 	}
 
+	updateNotification(notification) {
+		console.log('update notification:', this);
+		let node = document.getElementById(notification.id);
+		let nodeImage = node.getElementsByTagName('img')[0];
+		let nodeTitle = node.getElementsByTagName('p')[0];
+		let nodeText = node.getElementsByTagName('p')[1];
+		let nodeBadge = node.getElementsByClassName('notification-badge')[0];
+		nodeBadge.classList.remove('notification-badge-new');
+		nodeBadge.classList.remove('notification-badge-update');
+		nodeBadge.innerHTML = '';
+
+		if (nodeImage.src != notification.image || nodeTitle.innerText != notification.title) {
+			nodeImage.src = notification.image;
+			nodeTitle.innerText = notification.title;
+			this.image = notification.image;
+			this.title = notification.title;
+			nodeBadge.classList.add('notification-badge-update');
+			nodeBadge.innerHTML = '<span class="vertical-center-text">updated</span>';
+
+			if (notification.type === 'text' && nodeText.innerText != notification.text) {
+				nodeText.innerText = notification.text;
+				this.text = notification.text;
+			} else if (notification.type === 'bonus' && nodeText.innerText != notification.requirement) {
+				nodeText.innerText = notification.requirement;
+				this.requirement = notification.requirement;
+			} else if (notification.type === 'Promotion' && nodeText.innerText != notification.link) {
+				nodeText.innerText = notification.link;
+				this.link = notification.link;
+			}
+			if (notification.expires) {
+				this.expires = notification.expires;
+			}
+		}
+	}
+
 	createNotification(image, text) {
 		const notificationsDropdown = document.getElementById('dropdown-body');
 		const notification = document.createElement('div');
@@ -191,13 +226,14 @@ class Notification {
 		const notificationBadgeContainer = document.createElement('div');
 		notificationBadgeContainer.classList.add('notification-row');
 		notificationBadgeContainer.innerHTML =
-			'<div class="notification-badge"><span class="vertical-center-text">new</span></div>';
+			'<div class="notification-badge notification-badge-new"><span class="vertical-center-text">new</span></div>';
 		notification.appendChild(notificationBadgeContainer);
 
 		const notificationBody = document.createElement('div');
 		notificationBody.classList.add('notification-body');
 
 		if (image) {
+			this.image = image;
 			const notificationImage = document.createElement('img');
 			notificationImage.classList.add('image');
 			notificationImage.classList.add('column');
@@ -316,16 +352,12 @@ class NotificationList {
 		}
 	}
 
-	removeNode(id) {
-		let node = document.getElementById(id);
+	removeNode(notification) {
+		let node = document.getElementById(notification.id);
 		node.className = node.className + ' hiden';
 		setTimeout(function() {
 			node.parentNode.removeChild(node);
 		}, 500);
-
-		let notification = this.notifications.find(function(notif) {
-			return notif.id === id;
-		});
 
 		let index = this.notifications.indexOf(notification);
 		if (index > -1) {
@@ -339,30 +371,45 @@ class NotificationList {
 	}
 }
 
+const notificationList = new NotificationList();
 function displayNotifications() {
 	const response = data[Math.floor(Math.random() * data.length)];
-	const notificationList = new NotificationList();
 	const notificationsDropdown = document.getElementById('dropdown-body');
-	notificationsDropdown.innerHTML = '';
+	const displayedNotifications = notificationsDropdown.getElementsByClassName('notification');
+	const oldNotifications = [ ...displayedNotifications ];
+
+	if (displayedNotifications.length > 0) {
+		for (let i = 0; i < displayedNotifications.length; i++) {
+			const existInNewRequest = response.find((notification) => {
+				return notification.id.toString() === displayedNotifications[i].id.toString();
+			});
+			if (!existInNewRequest) {
+				const removeNode = document.getElementById(displayedNotifications[i].id.toString());
+				notificationsDropdown.removeChild(removeNode);
+			}
+		}
+	}
 
 	response.forEach(function(notification) {
-		notificationList.addNode(notification);
-		const id = notification.id;
+		const indexInOldRequest = oldNotifications.findIndex((oldNotif) => {
+			return oldNotif.id.toString() === notification.id.toString();
+		});
+		if (indexInOldRequest === -1) {
+			notificationList.addNode(notification);
+		} else if (indexInOldRequest >= 0) {
+			notificationList[indexInOldRequest].updateNode(notification);
+		}
 		if (notification.expires) {
 			setTimeout(
 				function() {
-					notificationList.removeNode(id);
+					notificationList.removeNode(notification);
 				},
 				notification.expires,
-				id
+				notification
 			);
 		}
-		setTimeout(() => {
-			const notification = document.getElementById(id.toString());
-			const notificationBadgeContainer = notification.getElementsByClassName('notification-row');
-			notificationBadgeContainer[0].innerHTML = '';
-		}, notification.expires - 500);
 	});
+	// console.log(notificationList);
 }
 
 displayNotifications();
@@ -377,8 +424,6 @@ const intervalID = window.setInterval(displayNotifications, 10000);
 const btn = document.getElementById('notif-btn');
 btn.addEventListener('click', (e) => {
 	var dropdown = document.querySelector('.dropdown-content'); // Using a class instead, see note below.
-	// dropdown.classList.toggle('hide-item');
-	// dropdown.classList.toggle('fade-in');
 	dropdown.classList.toggle('hiden');
 	dropdown.classList.toggle('visible');
 });
