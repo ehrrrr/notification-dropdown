@@ -185,11 +185,13 @@ class Notification {
 		const notification = document.createElement('div');
 		notification.setAttribute('id', this.id);
 		notification.classList.add('notification');
-		notification.classList.add('item-is-visible');
+		notification.classList.add('visible');
 		notificationsDropdown.appendChild(notification);
 
 		const notificationBadgeContainer = document.createElement('div');
 		notificationBadgeContainer.classList.add('notification-row');
+		notificationBadgeContainer.innerHTML =
+			'<div class="notification-badge"><span class="vertical-center-text">new</span></div>';
 		notification.appendChild(notificationBadgeContainer);
 
 		const notificationBody = document.createElement('div');
@@ -277,14 +279,50 @@ class NotificationList {
 	}
 
 	addNode(notification) {
-		this.notifications.push(notification);
 		if (notification.type != 'bonus') {
 			this.count++;
 			this.displayCounter();
 		}
+		if (notification.type === 'text') {
+			const textNotif = new TextNotification(
+				notification.id,
+				notification.title,
+				notification.text,
+				notification.expires
+			);
+			const text = textNotif.createTextBody(textNotif.title, textNotif.text);
+			textNotif.createNotification('./images/text.svg', text);
+			this.notifications.push(textNotif);
+		} else if (notification.type === 'bonus') {
+			const bonusNotif = new BonusNotification(
+				notification.id,
+				notification.title,
+				notification.requirement,
+				notification.expires
+			);
+			const text = bonusNotif.createTextBody(bonusNotif.title, bonusNotif.requirement);
+			bonusNotif.createNotification('./images/bonus.svg', text);
+			this.notifications.push(bonusNotif);
+		} else if (notification.type === 'Promotion') {
+			const promoNotif = new PromotionNotification(
+				notification.id,
+				notification.title,
+				notification.image,
+				notification.link
+			);
+			const text = promoNotif.createTextBody(promoNotif.title, promoNotif.link);
+			promoNotif.createNotification(promoNotif.image, text);
+			this.notifications.push(promoNotif);
+		}
 	}
 
 	removeNode(id) {
+		let node = document.getElementById(id);
+		node.className = node.className + ' hiden';
+		setTimeout(function() {
+			node.parentNode.removeChild(node);
+		}, 500);
+
 		let notification = this.notifications.find(function(notif) {
 			return notif.id === id;
 		});
@@ -306,51 +344,24 @@ function displayNotifications() {
 	const notificationList = new NotificationList();
 	const notificationsDropdown = document.getElementById('dropdown-body');
 	notificationsDropdown.innerHTML = '';
+
 	response.forEach(function(notification) {
+		notificationList.addNode(notification);
 		const id = notification.id;
-		if (notification.type === 'text') {
-			const textNotif = new TextNotification(
-				notification.id,
-				notification.title,
-				notification.text,
-				notification.expires
-			);
-			const text = textNotif.createTextBody(textNotif.title, textNotif.text);
-			textNotif.createNotification('./images/text.svg', text);
-			notificationList.addNode(textNotif);
-		} else if (notification.type === 'bonus') {
-			const bonusNotif = new BonusNotification(
-				notification.id,
-				notification.title,
-				notification.requirement,
-				notification.expires
-			);
-			const text = bonusNotif.createTextBody(bonusNotif.title, bonusNotif.requirement);
-			bonusNotif.createNotification('./images/bonus.svg', text);
-			notificationList.addNode(bonusNotif);
-		} else if (notification.type === 'Promotion') {
-			const promoNotif = new PromotionNotification(
-				notification.id,
-				notification.title,
-				notification.image,
-				notification.link
-			);
-			const text = promoNotif.createTextBody(promoNotif.title, promoNotif.link);
-			promoNotif.createNotification(promoNotif.image, text);
-			notificationList.addNode(promoNotif);
-		}
 		if (notification.expires) {
 			setTimeout(
 				function() {
-					let node = document.getElementById(id);
-					node.parentNode.removeChild(node);
 					notificationList.removeNode(id);
-					console.log(notificationList);
 				},
 				notification.expires,
 				id
 			);
 		}
+		setTimeout(() => {
+			const notification = document.getElementById(id.toString());
+			const notificationBadgeContainer = notification.getElementsByClassName('notification-row');
+			notificationBadgeContainer[0].innerHTML = '';
+		}, notification.expires - 500);
 	});
 }
 
@@ -362,3 +373,12 @@ displayNotifications();
  * so you can remove it later by calling clearInterval()
  */
 const intervalID = window.setInterval(displayNotifications, 10000);
+
+const btn = document.getElementById('notif-btn');
+btn.addEventListener('click', (e) => {
+	var dropdown = document.querySelector('.dropdown-content'); // Using a class instead, see note below.
+	// dropdown.classList.toggle('hide-item');
+	// dropdown.classList.toggle('fade-in');
+	dropdown.classList.toggle('hiden');
+	dropdown.classList.toggle('visible');
+});
