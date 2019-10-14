@@ -181,36 +181,37 @@ class Notification {
 	}
 
 	updateNotification(notification) {
-		console.log('update notification:', this);
 		let node = document.getElementById(notification.id);
-		let nodeImage = node.getElementsByTagName('img')[0];
-		let nodeTitle = node.getElementsByTagName('p')[0];
-		let nodeText = node.getElementsByTagName('p')[1];
-		let nodeBadge = node.getElementsByClassName('notification-badge')[0];
-		nodeBadge.classList.remove('notification-badge-new');
-		nodeBadge.classList.remove('notification-badge-update');
-		nodeBadge.innerHTML = '';
+		if (node) {
+			let nodeImage = node.getElementsByTagName('img')[0];
+			let nodeTitle = node.getElementsByTagName('p')[0];
+			let nodeText = node.getElementsByTagName('p')[1];
+			let nodeBadge = node.getElementsByClassName('notification-badge')[0];
+			nodeBadge.classList.remove('notification-badge-new');
+			nodeBadge.classList.remove('notification-badge-update');
+			nodeBadge.innerHTML = '';
 
-		if (nodeImage.src != notification.image || nodeTitle.innerText != notification.title) {
-			nodeImage.src = notification.image;
-			nodeTitle.innerText = notification.title;
-			this.image = notification.image;
-			this.title = notification.title;
-			nodeBadge.classList.add('notification-badge-update');
-			nodeBadge.innerHTML = '<span class="vertical-center-text">updated</span>';
+			if (nodeImage.src != notification.image || nodeTitle.innerText != notification.title) {
+				nodeImage.src = notification.image;
+				nodeTitle.innerText = notification.title;
+				this.image = notification.image;
+				this.title = notification.title;
+				nodeBadge.classList.add('notification-badge-update');
+				nodeBadge.innerHTML = '<span class="vertical-center-text">updated</span>';
 
-			if (notification.type === 'text' && nodeText.innerText != notification.text) {
-				nodeText.innerText = notification.text;
-				this.text = notification.text;
-			} else if (notification.type === 'bonus' && nodeText.innerText != notification.requirement) {
-				nodeText.innerText = notification.requirement;
-				this.requirement = notification.requirement;
-			} else if (notification.type === 'Promotion' && nodeText.innerText != notification.link) {
-				nodeText.innerText = notification.link;
-				this.link = notification.link;
-			}
-			if (notification.expires) {
-				this.expires = notification.expires;
+				if (notification.type === 'text' && nodeText.innerText != notification.text) {
+					nodeText.innerText = notification.text;
+					this.text = notification.text;
+				} else if (notification.type === 'bonus' && nodeText.innerText != notification.requirement) {
+					nodeText.innerText = notification.requirement;
+					this.requirement = notification.requirement;
+				} else if (notification.type === 'Promotion' && nodeText.innerText != notification.link) {
+					nodeText.innerText = notification.link;
+					this.link = notification.link;
+				}
+				if (notification.expires) {
+					this.expires = notification.expires;
+				}
 			}
 		}
 	}
@@ -356,10 +357,10 @@ class NotificationList {
 		let node = document.getElementById(notification.id);
 		node.className = node.className + ' hiden';
 		setTimeout(function() {
-			node.parentNode.removeChild(node);
+			node.remove();
 		}, 500);
 
-		let index = this.notifications.indexOf(notification);
+		let index = this.notifications.findIndex((notif) => notif.id === notification.id);
 		if (index > -1) {
 			this.notifications.splice(index, 1);
 		}
@@ -375,29 +376,30 @@ const notificationList = new NotificationList();
 function displayNotifications() {
 	const response = data[Math.floor(Math.random() * data.length)];
 	const notificationsDropdown = document.getElementById('dropdown-body');
-	const displayedNotifications = notificationsDropdown.getElementsByClassName('notification');
-	const oldNotifications = [ ...displayedNotifications ];
 
-	if (displayedNotifications.length > 0) {
-		for (let i = 0; i < displayedNotifications.length; i++) {
-			const existInNewRequest = response.find((notification) => {
-				return notification.id.toString() === displayedNotifications[i].id.toString();
+	if (notificationList.notifications.length > 0) {
+		notificationList.notifications.forEach((oldNotif) => {
+			const existInNewRequest = response.find((notif) => {
+				return notif.id === oldNotif.id;
 			});
 			if (!existInNewRequest) {
-				const removeNode = document.getElementById(displayedNotifications[i].id.toString());
-				notificationsDropdown.removeChild(removeNode);
+				const removeNode = document.getElementById(oldNotif.id.toString());
+				notificationList.removeNode(oldNotif);
+				if (removeNode) {
+					removeNode.remove();
+				}
 			}
-		}
+		});
 	}
 
-	response.forEach(function(notification) {
-		const indexInOldRequest = oldNotifications.findIndex((oldNotif) => {
-			return oldNotif.id.toString() === notification.id.toString();
+	response.forEach((notification) => {
+		const indexInOldRequest = notificationList.notifications.findIndex((oldNotif) => {
+			return oldNotif.id === notification.id;
 		});
 		if (indexInOldRequest === -1) {
 			notificationList.addNode(notification);
 		} else if (indexInOldRequest >= 0) {
-			notificationList[indexInOldRequest].updateNode(notification);
+			notificationList.notifications[indexInOldRequest].updateNotification(notification);
 		}
 		if (notification.expires) {
 			setTimeout(
@@ -409,7 +411,6 @@ function displayNotifications() {
 			);
 		}
 	});
-	// console.log(notificationList);
 }
 
 displayNotifications();
