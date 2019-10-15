@@ -380,7 +380,6 @@ class NotificationList {
 const notificationList = new NotificationList();
 function displayNotifications() {
 	const response = data[Math.floor(Math.random() * data.length)];
-	const notificationsDropdown = document.getElementById('dropdown-body');
 
 	if (notificationList.notifications.length > 0) {
 		notificationList.notifications.forEach((oldNotif) => {
@@ -407,29 +406,19 @@ function displayNotifications() {
 			notificationList.notifications[indexInOldRequest].updateNotification(notification);
 		}
 		if (notification.expires) {
-			setTimeout(
-				function() {
-					notificationList.removeNode(notification);
-				},
-				notification.expires,
-				notification
-			);
+			setTimeout(function() {
+				notificationList.removeNode(notification);
+			}, notification.expires);
 		}
 	});
 }
 
 displayNotifications();
-/***
- * Repeatedly calls a function or executes a code snippet, 
- * with a fixed time delay between each call. It returns an interval ID
- *  which uniquely identifies the interval, 
- * so you can remove it later by calling clearInterval()
- */
 const intervalID = window.setInterval(displayNotifications, 10000);
 
 const btn = document.getElementById('notif-btn');
-btn.addEventListener('click', (e) => {
-	var dropdown = document.querySelector('.dropdown-content'); // Using a class instead, see note below.
+btn.addEventListener('click', () => {
+	var dropdown = document.querySelector('.dropdown-content');
 	dropdown.classList.toggle('hidden');
 	dropdown.classList.toggle('visible');
 });
