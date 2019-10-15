@@ -221,8 +221,12 @@ class Notification {
 		const notification = document.createElement('div');
 		notification.setAttribute('id', this.id);
 		notification.classList.add('notification');
-		notification.classList.add('visible');
+		notification.classList.add('new-notification-hidden');
 		notificationsDropdown.appendChild(notification);
+		setTimeout(function() {
+			notification.classList.remove('new-notification-hidden');
+			notification.classList.add('new-notification-visible');
+		}, 100);
 
 		const notificationBadgeContainer = document.createElement('div');
 		notificationBadgeContainer.classList.add('notification-row');
@@ -313,6 +317,7 @@ class NotificationList {
 	displayCounter() {
 		let countNum = document.getElementById('notification-num');
 		countNum.innerText = this.count;
+		document.title = `(${this.count}) Notifications`;
 	}
 
 	addNode(notification) {
@@ -355,7 +360,7 @@ class NotificationList {
 
 	removeNode(notification) {
 		let node = document.getElementById(notification.id);
-		node.className = node.className + ' hiden';
+		node.className = node.className + ' hidden';
 		setTimeout(function() {
 			node.remove();
 		}, 500);
@@ -425,6 +430,6 @@ const intervalID = window.setInterval(displayNotifications, 10000);
 const btn = document.getElementById('notif-btn');
 btn.addEventListener('click', (e) => {
 	var dropdown = document.querySelector('.dropdown-content'); // Using a class instead, see note below.
-	dropdown.classList.toggle('hiden');
+	dropdown.classList.toggle('hidden');
 	dropdown.classList.toggle('visible');
 });
