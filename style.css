@@ -244,3 +244,69 @@ body {
 	transition: all 0s .4s, all .4s ease-in;
 	transform: translateY(-8px);
 }
+
+@media only screen and (max-width: 1260px) {
+	.btn {
+		top: 70px;
+		left: 460px;
+	}
+	.circle {
+		top: 62px;
+		left: 490px;
+	}
+	.dropdown-content {
+		position: absolute;
+		top: 110px;
+		left: 230px;
+		width: 308px;
+	}
+	.arrow-up {
+		position: absolute;
+		top: -10px;
+		left: 240px;
+	}
+}
+
+@media only screen and (max-width: 560px) {
+	.btn {
+		top: 70px;
+		left: 260px;
+	}
+	.circle {
+		top: 62px;
+		left: 290px;
+	}
+	.dropdown-content {
+		position: absolute;
+		top: 110px;
+		left: 30px;
+		width: 308px;
+	}
+	.arrow-up {
+		position: absolute;
+		top: -10px;
+		left: 240px;
+	}
+}
+
+@media only screen and (max-width: 360px) {
+	.btn {
+		top: 30px;
+		left: 230px;
+	}
+	.circle {
+		top: 22px;
+		left: 260px;
+	}
+	.dropdown-content {
+		position: absolute;
+		top: 73px;
+		left: 0px;
+		width: 300px;
+	}
+	.arrow-up {
+		position: absolute;
+		top: -10px;
+		left: 240px;
+	}
+}
